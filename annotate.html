@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
+<html>
+	<head>
+		<title>Example usage of the annotate widget</title>
+		
+		<!-- 3rd-party libs -->
+		<script type="text/javascript" src="lib/jquery/1.4/jquery-1.4.4.min.js"></script>
+		<script type="text/javascript" src="lib/jquery-ui/1.8/js/jquery-ui-1.8.11.custom.min.js"></script>
+		<script type="text/javascript" src="lib/rdfquery/latest/jquery.rdfquery.rules.js"></script>
+		<script type="text/javascript" src="lib/underscoreJS/underscore.js"></script>
+		<script type="text/javascript" src="lib/backboneJS/backbone.js"></script>
+        
+        <!-- VIE -->
+		<script type="text/javascript" src="lib/vie/vie.js"></script>
+        
+		<!-- VIE^2 -->
+		<script type="text/javascript" src="lib/vie2/vie2-latest.debug.js"></script>
+		<script type="text/javascript">VIE2.logLevels = ["info", "warn", "error"];</script>
+        
+		<!-- Connector plug-ins -->
+		<script type="text/javascript" src="lib/vie2/connector/stanbol.js"></script>
+		<script type="text/javascript" src="lib/vie2/connector/dbpedia.js"></script>
+		<script type="text/javascript" src="lib/vie2/connector/rdfa.js"></script>
+		
+		<!-- Mapping plug-ins -->
+		<script type="text/javascript" src="lib/vie2/mapping/person.js"></script>
+		<script type="text/javascript" src="lib/vie2/mapping/task.js"></script>
+
+		<script type="text/javascript">
+		    $(document).ready(function() {
+		        // Make an element editable using the VIE.editable widget. 
+		        // Whenever a smartContentChange happens..
+                $('#content').editable().bind('editablechanged', function(editedInfo){
+                    // .. analyze the content using VIE2.
+                    $(editedInfo.element).vie2('analyze')
+                    // for each enhancement found by VIE2, 
+                    .bind('enhancementFound', function(enhancementDetails){
+                        // get create a dom element containing only the occurrance of the found entity
+                        // (getOrCreateDomElement is to be implemented)
+                        var foundEntityDomEl = $(this).getOrCreateDomElement( 
+                            enhancementDetails.occurranceText, {
+                                // create only if it doesn't have it's element already
+                                createMode: 'existing', 
+                                createElement: 'span', 
+                                // only the first occurrence
+                                mode: 'first', 
+                                styleClass: 'enhancementFound'
+                            }
+                        );
+                        // Apply annotation widget
+                        // This maakes the occurrance clickable
+                        // On clicking on the word a pop-over shows the found enhancements
+                        // and the buttons Accept, Decline, [More]
+                        // on Accept the element gets RDFa annotated plus specific event
+                        // on Decline the marker gets removed plus specific event
+                        $(foundEntityDomEl).annotate({
+                            enhancement: enhancementDetails,
+                        });
+                    });
+                });
+                
+            });
+		</script>
+		
+	</head>
+	<body>
+		<button onclick='analyzeText($("#test"), this);'>Analyze the short text below!</button><br />
+		
+		<span id="test">
+		    The Papal Basilica of Saint Peter (Latin: Basilica Sancti Petri), officially known in Italian as Basilica Papale di San Pietro in Vaticano and commonly known as St. Peter's Basilica, is a Late Renaissance church located within the Vatican City. St. Peter's Basilica has the largest interior of any Christian church in the world.[1] It is regarded as one of the holiest Catholic sites. It has been described as "holding a unique position in the Christian world"[2] and as "the greatest of all churches of Christendom".[3]
+</span><br /><br />
+
+</html>

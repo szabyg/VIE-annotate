@@ -1,0 +1,3 @@
+[submodule "lib/VIEwidgets"]
+	path = lib/VIEwidgets
+	url = git://github.com/IKS/VIEwidgets.git
