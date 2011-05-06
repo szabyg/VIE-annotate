@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
-<html>
+<html
+    version="XHTML+RDFa 1.0"
+    xml:lang="en"
+	xmlns:foaf = "http://xmlns.com/foaf/0.1/"
+    xmlnsrdfcal = "http://www.w3.org/2002/12/cal#",
+	xmlns:dbpedia = "http://dbpedia.org/resource/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:demo="http://this.demo.eu/">
+
 	<head>
 		<title>Example usage of the annotate widget</title>
 		
+		<style>
+		 .new-enhancement {
+		    border-bottom:1px dotted;
+		 }
+		</style>
 		<!-- 3rd-party libs -->
 		<script type="text/javascript" src="lib/jquery/1.4/jquery-1.4.4.min.js"></script>
 		<script type="text/javascript" src="lib/jquery-ui/1.8/js/jquery-ui-1.8.11.custom.min.js"></script>
@@ -11,64 +24,129 @@
 		<script type="text/javascript" src="lib/underscoreJS/underscore.js"></script>
 		<script type="text/javascript" src="lib/backboneJS/backbone.js"></script>
         
+        <script type="text/javascript" src="http://extjs-public.googlecode.com/svn/tags/extjs-3.2.1/release/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="http://extjs-public.googlecode.com/svn/tags/extjs-3.2.1/release/ext-all.js"></script>
+		<script type="text/javascript" src="lib/jquery/jquery.cookie.js"></script>
+
+        <script type="text/javascript" src="lib/aloha/debug/aloha-nodeps.js"></script>
+        <script type="text/javascript" src="lib/aloha/aloha/plugins/com.gentics.aloha.plugins.Format/plugin.js"></script>
+        <script type="text/javascript" src="lib/aloha/aloha/plugins/com.gentics.aloha.plugins.HighlightEditables/plugin.js"></script>
+        <script type="text/javascript" src="lib/aloha/aloha/plugins/com.gentics.aloha.plugins.Table/plugin.js"></script>
+        <script type="text/javascript" src="lib/aloha/aloha/plugins/com.gentics.aloha.plugins.List/plugin.js"></script>
+        <script type="text/javascript" src="lib/aloha/aloha/plugins/com.gentics.aloha.plugins.Link/plugin.js"></script>
+        <script type="text/javascript" src="lib/aloha/aloha/plugins/com.gentics.aloha.plugins.HighlightEditables/plugin.js"></script>
+        <script type="text/javascript" src="lib/aloha/aloha/plugins/com.gentics.aloha.plugins.TOC/plugin.js"></script>
+        <script type="text/javascript" src="lib/aloha/aloha/plugins/com.gentics.aloha.plugins.Link/delicious.js"></script>
+        <script type="text/javascript" src="lib/aloha/aloha/plugins/com.gentics.aloha.plugins.Link/LinkList.js"></script>
+        <script type="text/javascript" src="lib/aloha/aloha/plugins/com.gentics.aloha.plugins.Paste/plugin.js"></script>
+        <script type="text/javascript" src="lib/aloha/aloha/plugins/com.gentics.aloha.plugins.Paste/wordpastehandler.js"></script>
+        
         <!-- VIE -->
 		<script type="text/javascript" src="lib/vie/vie.js"></script>
         
 		<!-- VIE^2 -->
 		<script type="text/javascript" src="lib/vie2/vie2-latest.debug.js"></script>
 		<script type="text/javascript">VIE2.logLevels = ["info", "warn", "error"];</script>
-        
+
+		<script type="text/javascript" src="lib/VIEwidgets/editable.js"></script>
+		<script type="text/javascript" src="lib/VIEwidgets/annotate.js"></script>
+
 		<!-- Connector plug-ins -->
 		<script type="text/javascript" src="lib/vie2/connector/stanbol.js"></script>
+<!--
 		<script type="text/javascript" src="lib/vie2/connector/dbpedia.js"></script>
 		<script type="text/javascript" src="lib/vie2/connector/rdfa.js"></script>
+-->
 		
 		<!-- Mapping plug-ins -->
 		<script type="text/javascript" src="lib/vie2/mapping/person.js"></script>
-		<script type="text/javascript" src="lib/vie2/mapping/task.js"></script>
+		<script type="text/javascript" src="lib/vie2/mapping/place.js"></script>
+		<script type="text/javascript" src="lib/vie2/mapping/organization.js"></script>
 
 		<script type="text/javascript">
 		    $(document).ready(function() {
+                // configure the vie2 connector
+                VIE2.connectors.stanbol.options({
+             	    "proxy_url"     : "lib/proxy/proxy.php",
+             	    "enhancer_url"  : "http://dev.iks-project.eu:8080/engines/",
+//             	    "enhancer_url"  : "http://stanbol.demo.nuxeo.com/engines/",
+             	    "entityhub_url" : "http://dev.iks-project.eu:8080/entityhub/"
+                });
+
+
 		        // Make an element editable using the VIE.editable widget. 
 		        // Whenever a smartContentChange happens..
-                $('#content').editable().bind('editablechanged', function(editedInfo){
-                    // .. analyze the content using VIE2.
-                    $(editedInfo.element).vie2('analyze')
-                    // for each enhancement found by VIE2, 
-                    .bind('enhancementFound', function(enhancementDetails){
-                        // get create a dom element containing only the occurrance of the found entity
-                        // (getOrCreateDomElement is to be implemented)
-                        var foundEntityDomEl = $(this).getOrCreateDomElement( 
-                            enhancementDetails.occurranceText, {
-                                // create only if it doesn't have it's element already
-                                createMode: 'existing', 
-                                createElement: 'span', 
-                                // only the first occurrence
-                                mode: 'first', 
-                                styleClass: 'enhancementFound'
-                            }
-                        );
-                        // Apply annotation widget
-                        // This maakes the occurrance clickable
-                        // On clicking on the word a pop-over shows the found enhancements
-                        // and the buttons Accept, Decline, [More]
-                        // on Accept the element gets RDFa annotated plus specific event
-                        // on Decline the marker gets removed plus specific event
-                        $(foundEntityDomEl).annotate({
-                            enhancement: enhancementDetails,
-                        });
-                    });
-                });
                 
+                // get create a dom element containing only the occurrance of the found entity
+                // (getOrCreateDomElement is to be implemented)
+                function getOrCreateDomElement(element, text, options) {
+                    var domEl = element;
+                    // find the text node
+                    if(element.textContent.indexOf(text) == -1){
+                        throw "'" + text + "' doesn't appear in the text block.";
+                        return $();
+                    }
+                    while(domEl.textContent.indexOf(text) != -1 && domEl.nodeName != '#text'){
+                        domEl = _(domEl.childNodes).detect(function(el){
+                            return el.textContent.indexOf(text) != -1;
+                        });
+                    }
+                    if(options.createMode == "existing" && domEl.parentElement.textValue == text){
+                        return domEl.parentElement;
+                    } else {
+                        var pos = domEl.nodeValue.indexOf(text);
+                        var len = text.length;
+                        domEl.splitText(pos + len);
+                        var newElement = document.createElement(options.createElement);
+                        newElement.innerHTML = text;
+                        domEl.parentElement.replaceChild(newElement, domEl.splitText(pos))
+                        return $(newElement);
+                    }
+                }
+                
+                $('#annotatebutton').click(function(){
+                    $('#content').vie2().vie2('analyze', function(data){
+                        var element = this[0];// http://fise.iks-project.eu/ontology/selection-context
+                        console.info(VIE2.globalCache.where("?subj <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#plainTextContent> ?text")[0].text.toString());
+                        var occurrences = VIE2.globalCache.where('?s fise:selected-text ?occurrence');
+                        var flatOccurrences = _(occurrences).map(function(oc){return oc.occurrence.value})
+                        var uniqueOccurrences = _(flatOccurrences).uniq();
+                        _(uniqueOccurrences).each(function(occurrence){
+                            console.info(occurrence);
+                            
+                            // $('#content')[0].childNodes[0].splitText
+                            // nodeName == "#text"
+                            
+                            var foundEntityDomEl = getOrCreateDomElement(
+                                element, 
+                                occurrence, {
+                                    // create only if it doesn't have it's element already
+                                    createMode: 'existing', 
+                                    createElement: 'span', 
+                                }
+                            );
+                            $(foundEntityDomEl)
+                            .addClass('new-enhancement')
+                            .annotate({
+                                text: occurrence
+                            });
+                        })
+                        console.info(data);
+                    },
+                    {
+                        connectors: ['rdfa', 'stanbol']
+                    }) //restrict to these two connectors
+
+                });
             });
 		</script>
 		
 	</head>
-	<body>
-		<button onclick='analyzeText($("#test"), this);'>Analyze the short text below!</button><br />
-		
-		<span id="test">
-		    The Papal Basilica of Saint Peter (Latin: Basilica Sancti Petri), officially known in Italian as Basilica Papale di San Pietro in Vaticano and commonly known as St. Peter's Basilica, is a Late Renaissance church located within the Vatican City. St. Peter's Basilica has the largest interior of any Christian church in the world.[1] It is regarded as one of the holiest Catholic sites. It has been described as "holding a unique position in the Christian world"[2] and as "the greatest of all churches of Christendom".[3]
-</span><br /><br />
+	<body about="content">
+	    <h1>Analyze and annotate</h1>
+	    <button id="annotatebutton">Annotate</button>
+		<div id="content" property="foo" editable="true">
+		    The Papal Basilica of Saint Peter (Latin: Basilica Sancti Petri), officially known in Italian as Basilica Papale di San Pietro in Vaticano and commonly known as St. Peter's Basilica, is a Late Renaissance church located within the Vatican City. St. Peter's Basilica has the largest interior of any Christian church in the world.[1] It is regarded as one of the holiest Catholic sites. It has been described as 'holding a unique position in the Christian world'[2] and as 'the greatest of all churches of Christendom'.[3]
+</div><br /><br />
 
 </html>
