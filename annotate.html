@@ -3,30 +3,30 @@
 <html
     version="XHTML+RDFa 1.0"
     xml:lang="en"
-	xmlns:foaf = "http://xmlns.com/foaf/0.1/"
+    xmlns:foaf = "http://xmlns.com/foaf/0.1/"
     xmlnsrdfcal = "http://www.w3.org/2002/12/cal#",
-	xmlns:dbpedia = "http://dbpedia.org/resource/"
+    xmlns:dbpedia = "http://dbpedia.org/resource/"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
     xmlns:demo="http://this.demo.eu/">
 
-	<head>
-		<title>Example usage of the annotate widget</title>
-		
-		<style>
-		 .new-enhancement {
-		    border-bottom:1px dotted;
-		 }
-		</style>
-		<!-- 3rd-party libs -->
-		<script type="text/javascript" src="lib/jquery/1.4/jquery-1.4.4.min.js"></script>
-		<script type="text/javascript" src="lib/jquery-ui/1.8/js/jquery-ui-1.8.11.custom.min.js"></script>
-		<script type="text/javascript" src="lib/rdfquery/latest/jquery.rdfquery.rules.js"></script>
-		<script type="text/javascript" src="lib/underscoreJS/underscore.js"></script>
-		<script type="text/javascript" src="lib/backboneJS/backbone.js"></script>
+    <head>
+        <title>Example usage of the annotate widget</title>
+        
+        <style>
+         .new-enhancement {
+            border-bottom:1px dotted;
+         }
+        </style>
+        <!-- 3rd-party libs -->
+        <script type="text/javascript" src="lib/jquery/1.4/jquery-1.4.4.min.js"></script>
+        <script type="text/javascript" src="lib/jquery-ui/1.8/js/jquery-ui-1.8.11.custom.min.js"></script>
+        <script type="text/javascript" src="lib/rdfquery/latest/jquery.rdfquery.rules.js"></script>
+        <script type="text/javascript" src="lib/underscoreJS/underscore.js"></script>
+        <script type="text/javascript" src="lib/backboneJS/backbone.js"></script>
         
         <script type="text/javascript" src="http://extjs-public.googlecode.com/svn/tags/extjs-3.2.1/release/adapter/ext/ext-base.js"></script>
         <script type="text/javascript" src="http://extjs-public.googlecode.com/svn/tags/extjs-3.2.1/release/ext-all.js"></script>
-		<script type="text/javascript" src="lib/jquery/jquery.cookie.js"></script>
+        <script type="text/javascript" src="lib/jquery/jquery.cookie.js"></script>
 
         <script type="text/javascript" src="lib/aloha/debug/aloha-nodeps.js"></script>
         <script type="text/javascript" src="lib/aloha/aloha/plugins/com.gentics.aloha.plugins.Format/plugin.js"></script>
@@ -42,40 +42,40 @@
         <script type="text/javascript" src="lib/aloha/aloha/plugins/com.gentics.aloha.plugins.Paste/wordpastehandler.js"></script>
         
         <!-- VIE -->
-		<script type="text/javascript" src="lib/vie/vie.js"></script>
+        <script type="text/javascript" src="lib/vie/vie.js"></script>
         
-		<!-- VIE^2 -->
-		<script type="text/javascript" src="lib/vie2/vie2-latest.debug.js"></script>
-		<script type="text/javascript">VIE2.logLevels = ["info", "warn", "error"];</script>
+        <!-- VIE^2 -->
+        <script type="text/javascript" src="lib/vie2/vie2-latest.debug.js"></script>
+        <script type="text/javascript">VIE2.logLevels = ["info", "warn", "error"];</script>
 
-		<script type="text/javascript" src="lib/VIEwidgets/editable.js"></script>
-		<script type="text/javascript" src="lib/VIEwidgets/annotate.js"></script>
+        <script type="text/javascript" src="lib/VIEwidgets/editable.js"></script>
+        <script type="text/javascript" src="lib/VIEwidgets/annotate.js"></script>
 
-		<!-- Connector plug-ins -->
-		<script type="text/javascript" src="lib/vie2/connector/stanbol.js"></script>
+        <!-- Connector plug-ins -->
+        <script type="text/javascript" src="lib/vie2/connector/stanbol.js"></script>
 <!--
-		<script type="text/javascript" src="lib/vie2/connector/dbpedia.js"></script>
-		<script type="text/javascript" src="lib/vie2/connector/rdfa.js"></script>
+        <script type="text/javascript" src="lib/vie2/connector/dbpedia.js"></script>
+        <script type="text/javascript" src="lib/vie2/connector/rdfa.js"></script>
 -->
-		
-		<!-- Mapping plug-ins -->
-		<script type="text/javascript" src="lib/vie2/mapping/person.js"></script>
-		<script type="text/javascript" src="lib/vie2/mapping/place.js"></script>
-		<script type="text/javascript" src="lib/vie2/mapping/organization.js"></script>
+        
+        <!-- Mapping plug-ins -->
+        <script type="text/javascript" src="lib/vie2/mapping/person.js"></script>
+        <script type="text/javascript" src="lib/vie2/mapping/place.js"></script>
+        <script type="text/javascript" src="lib/vie2/mapping/organization.js"></script>
 
-		<script type="text/javascript">
-		    $(document).ready(function() {
+        <script type="text/javascript">
+            $(document).ready(function() {
                 // configure the vie2 connector
                 VIE2.connectors.stanbol.options({
-             	    "proxy_url"     : "lib/proxy/proxy.php",
-             	    "enhancer_url"  : "http://dev.iks-project.eu:8080/engines/",
-//             	    "enhancer_url"  : "http://stanbol.demo.nuxeo.com/engines/",
-             	    "entityhub_url" : "http://dev.iks-project.eu:8080/entityhub/"
+                     "proxy_url"     : "lib/proxy/proxy.php",
+                     "enhancer_url"  : "http://dev.iks-project.eu:8080/engines/",
+//                     "enhancer_url"  : "http://stanbol.demo.nuxeo.com/engines/",
+                     "entityhub_url" : "http://dev.iks-project.eu:8080/entityhub/"
                 });
 
 
-		        // Make an element editable using the VIE.editable widget. 
-		        // Whenever a smartContentChange happens..
+                // Make an element editable using the VIE.editable widget. 
+                // Whenever a smartContentChange happens..
                 
                 // get create a dom element containing only the occurrance of the found entity
                 // (getOrCreateDomElement is to be implemented)
@@ -139,14 +139,14 @@
 
                 });
             });
-		</script>
-		
-	</head>
-	<body about="content">
-	    <h1>Analyze and annotate</h1>
-	    <button id="annotatebutton">Annotate</button>
-		<div id="content" property="foo" editable="true">
-		    The Papal Basilica of Saint Peter (Latin: Basilica Sancti Petri), officially known in Italian as Basilica Papale di San Pietro in Vaticano and commonly known as St. Peter's Basilica, is a Late Renaissance church located within the Vatican City. St. Peter's Basilica has the largest interior of any Christian church in the world.[1] It is regarded as one of the holiest Catholic sites. It has been described as 'holding a unique position in the Christian world'[2] and as 'the greatest of all churches of Christendom'.[3]
+        </script>
+        
+    </head>
+    <body about="content">
+        <h1>Analyze and annotate</h1>
+        <button id="annotatebutton">Annotate</button>
+        <div id="content" property="foo" editable="true">
+            The Papal Basilica of Saint Peter (Latin: Basilica Sancti Petri), officially known in Italian as Basilica Papale di San Pietro in Vaticano and commonly known as St. Peter's Basilica, is a Late Renaissance church located within the Vatican City. St. Peter's Basilica has the largest interior of any Christian church in the world.[1] It is regarded as one of the holiest Catholic sites. It has been described as 'holding a unique position in the Christian world'[2] and as 'the greatest of all churches of Christendom'.[3]
 </div><br /><br />
 
 </html>
