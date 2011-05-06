@@ -14,11 +14,16 @@
             .filter('occ', this.options.text);
             if(entities.length){
                 _(entities).each(function(entityResult){
+                    
+                    // var curie = $.createCurie(entityResult.entity.value, {namespaces: VIE2.namespaces});
                     console.info(['entity for ' + entityResult.occ, entityResult.entity.toString()])
-                    that.element.attr('about', entityResult.entity.toString());
+                    that.element.attr('about', entityResult.entity.value);
+                    // that.element.attr("property", 'dbpedia:foo')
+                    var fromVIE = VIE.RDFaEntities.getInstance(that.element);
+                    console.log("VIE finds", fromVIE);
                 })
             } else {
-                console.info('No entity for ' + this.options.text);
+                console.info("No entity for '" + this.options.text + "'");
             }
             this.element.bind('click', function(){
                 that.showDialog();
@@ -38,7 +43,7 @@
             newDiv.attr('title', this.options.text);
             $('body').append(newDiv);
             $(newDiv).html('to be templated...');
-            $(newDiv).dialog({show:'fade', hide: 'explode'});
+            $(newDiv).dialog({show:'fade', hide: 'fade'});
 /*
             newDiv.position({
                 of: this.element,
