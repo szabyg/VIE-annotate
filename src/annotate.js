@@ -1,27 +1,35 @@
 (function(jQuery) {
     jQuery.widget('VIE2.annotate', {
         options: {
+            // rdfQuery object
             store: VIE2.globalCache,
-            text: ''
+            // acceptStrategy can be a string identifying a strategy like 
+            // 'unique': Automatically accept if there's only one enhancement, default
+            // 'none': No enhancement gets accepted automatically
+            // callback function: implement your own strategy
+            acceptStrategy: 'unique',
+            text: '',
         },
     
         _create: function() {
             if(!this.options.text)this.options.text = this.element.textContent;
             var that = this;
             var entities = this.options.store
-            .where('?entity <http://fise.iks-project.eu/ontology/selected-text> ?occ')
-            .where('?entity fise:hasEntityAnnotation ?annotation')
+            .where('?entity fise:selected-text ?occ')
+            .where('?enh fise:confidence ?conf')
+            .where('?entity fise:hasEntityAnnotation ?enh')
             .filter('occ', this.options.text);
+            entities = _(entities).sortBy(function(ent){ent.conf.value});
+            console.log('store entities found', entities);
             if(entities.length){
-                _(entities).each(function(entityResult){
-                    
-                    // var curie = $.createCurie(entityResult.entity.value, {namespaces: VIE2.namespaces});
-                    console.info(['entity for ' + entityResult.occ, entityResult.entity.toString()])
-                    that.element.attr('about', entityResult.entity.value);
-                    // that.element.attr("property", 'dbpedia:foo')
-                    var fromVIE = VIE.RDFaEntities.getInstance(that.element);
-                    console.log("VIE finds", fromVIE);
-                })
+                var entityResult = entities[0];
+                
+                // var curie = $.createCurie(entityResult.entity.value, {namespaces: VIE2.namespaces});
+                console.info(['entity for ' + entityResult.occ, entityResult.entity.toString()])
+                that.element.attr('about', entityResult.entity.value);
+                // that.element.attr("property", 'dbpedia:foo')
+                var fromVIE = VIE.RDFaEntities.getInstance(that.element);
+                console.log("VIE finds", fromVIE);
             } else {
                 console.info("No entity for '" + this.options.text + "'");
             }
@@ -51,6 +59,13 @@
                 at: 'center center'
             });
 */
+        },
+        acceptAnnotation: function(domEl, enhancement){
+            $(domEl).addClass('confirmedAnnotation');
+        },
+        declineAnnotation: function(domEl, enhancement){
+            $(domEl).removeClass('confirmedAnnotation');
+            this.options.blacklist[domEl.textValue] = enhancement.uri;
         },
         enable: function() {      
         },
