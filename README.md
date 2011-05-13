@@ -17,10 +17,10 @@ annotation widget. Later this could be compiled into one widget.
             $(editedInfo.element).vie2('analyze')
             // for each enhancement found by VIE2, 
             .bind('enhancementFound', function(enhancementDetails){
-                // get create a dom element containing only the occurrance of the found entity
+                // get create a dom element containing only the occurrence of the found entity
                 // (getOrCreateDomElement is to be implemented)
                 var foundEntityDomEl = $(this).getOrCreateDomElement( 
-                    enhancementDetails.occurranceText, {
+                    enhancementDetails.occurrenceText, {
                         // create only if it doesn't have it's element already
                         createMode: 'existing', 
                         createElement: 'span', 
