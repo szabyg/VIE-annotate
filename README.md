@@ -30,7 +30,7 @@ annotation widget. Later this could be compiled into one widget.
                     }
                 );
                 // Apply annotation widget
-                // This maakes the occurrance clickable
+                // This makes the occurrence clickable
                 // On clicking on the word a pop-over shows the found enhancements
                 // and the buttons Accept, Decline, [More]
                 // on Accept the element gets RDFa annotated plus specific event
